@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./portrait.svg" width="340" alt="ASCII portrait"/>
+
 <img src="./banner.svg" width="620" alt="miguelhl44"/>
 
 <img src="./stats.svg" width="620" alt="Contributions in the last year"/>
@@ -48,8 +50,18 @@ server. A [scheduled GitHub Action](.github/workflows/stats.yml) runs
 the GitHub GraphQL API, draws these SVGs, and commits only the files that
 changed.
 
+The portrait is a photo pushed through a character ramp by
+[`scripts/make_portrait.py`](scripts/make_portrait.py), which picks its ramp by
+rendering each candidate glyph and measuring how much ink it actually puts on
+the page, then draws itself one row at a time with a cursor riding the edge.
+Its typeface is [JetBrains Mono](scripts/fonts), subset to the eleven glyphs
+the ramp uses and inlined as base64 — an SVG loaded through `<img>` can't fetch
+a linked font, and the grid assumes an advance width of exactly 0.6 em.
+
 They animate with SMIL — declarative `<animate>` tags inside the SVG itself —
 because GitHub strips `<script>` and `<style>` from READMEs but leaves SVG
 documents loaded through `<img>` alone. Since nothing is fetched from a third
 party, nothing here can rate-limit, watermark, or go dark. Colors follow your
 GitHub theme via a `prefers-color-scheme` media query inside each SVG.
+
+<!-- profile README: generated graphics, see scripts/generate_stats.py -->
