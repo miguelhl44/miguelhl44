@@ -38,8 +38,6 @@ CW = 0.6  # monospace advance width in em; the common ratio
 QUERY = """
 query($login: String!, $from: DateTime!, $to: DateTime!) {
   user(login: $login) {
-    name
-    bio
     contributionsCollection(from: $from, to: $to) {
       contributionCalendar {
         totalContributions
@@ -166,8 +164,7 @@ def crunch(user):
                 weekly=weekly, weeks=weeks,
                 best_week=max(weekly, default=0),
                 current=cur, longest=best,
-                langs=langs, langs_note=note,
-                bio=(user.get("bio") or "").strip())
+                langs=langs, langs_note=note)
 
 
 def nice(iso):
@@ -212,73 +209,7 @@ def appear(begin, dur=0.4):
             f'begin="{begin:.2f}s" dur="{dur:.2f}s" fill="freeze"/>')
 
 
-def typed_line(uid, x, y, size, spans, begin, cps=26, weight=None):
-    """A line that types itself: a discrete-step clip reveal, one step per
-    character, with a block cursor riding the edge. Returns (svg, end_time)."""
-    full = "".join(t for t, _ in spans)
-    n = max(len(full), 1)
-    cw = size * CW
-    dur = n / cps
-    widths = [i * cw for i in range(n + 1)]
-    values = ";".join(f"{w:.1f}" for w in widths)
-    keytimes = ";".join(f"{i / n:.4f}" for i in range(n + 1))
-    end = begin + dur
-
-    clip = (f'<clipPath id="{uid}"><rect x="{x}" y="{y - size * 1.05:.1f}" '
-            f'width="0" height="{size * 1.45:.1f}">'
-            f'<animate attributeName="width" calcMode="discrete" '
-            f'values="{values}" keyTimes="{keytimes}" begin="{begin:.2f}s" '
-            f'dur="{dur:.2f}s" fill="freeze"/></rect></clipPath>')
-    w_attr = f' font-weight="{weight}"' if weight else ""
-    tspans = "".join(f'<tspan class="{c}">{esc(t)}</tspan>' for t, c in spans)
-    line = (f'<g clip-path="url(#{uid})"><text x="{x}" y="{y}" '
-            f'font-size="{size}"{w_attr} xml:space="preserve">{tspans}'
-            f'</text></g>')
-    xs = ";".join(f"{x + w:.1f}" for w in widths)
-    ride = (f'<rect x="{x}" y="{y - size * 0.8:.1f}" width="{cw * 0.9:.1f}" '
-            f'height="{size:.1f}" class="acc" opacity="0">'
-            f'<set attributeName="opacity" to="0.7" begin="{begin:.2f}s"/>'
-            f'<animate attributeName="x" calcMode="discrete" values="{xs}" '
-            f'keyTimes="{keytimes}" begin="{begin:.2f}s" dur="{dur:.2f}s" '
-            f'fill="freeze"/>'
-            f'<set attributeName="opacity" to="0" begin="{end:.2f}s"/></rect>')
-    return clip + line + ride, end
-
-
-def blink(x, y, size, begin):
-    return (f'<rect x="{x:.1f}" y="{y - size * 0.8:.1f}" '
-            f'width="{size * CW * 0.9:.1f}" height="{size:.1f}" class="acc" '
-            f'opacity="0"><animate attributeName="opacity" '
-            f'calcMode="discrete" values="1;0" keyTimes="0;0.5" dur="1.06s" '
-            f'begin="{begin:.2f}s" repeatCount="indefinite"/></rect>')
-
-
 # ---------------------------------------------------------------- graphics
-
-def draw_banner(login, bio):
-    p, t, y = [], 0.35, 30
-    seg, t = typed_line("bn0", 0, y, 13, [("~ $ ", "fnt"), ("whoami", "ink")],
-                        t, cps=22)
-    p.append(seg)
-    y += 38
-    seg, t = typed_line("bn1", 0, y, 30, [(login, "ink")], t + 0.30, cps=18,
-                        weight="600")
-    p.append(seg)
-    if bio:
-        y += 34
-        seg, t = typed_line("bn2", 0, y, 13,
-                            [("~ $ ", "fnt"), ("cat bio", "ink")],
-                            t + 0.35, cps=22)
-        p.append(seg)
-        y += 24
-        seg, t = typed_line("bn3", 0, y, 13, [(bio, "mut")], t + 0.20, cps=40)
-        p.append(seg)
-    y += 30
-    p.append(f'<g opacity="0">{appear(t + 0.25, 0.2)}'
-             + txt(0, y, "~ $", 13, "fnt") + "</g>")
-    p.append(blink(4 * 13 * CW, y, 13, t + 0.45))
-    return svg_open(WIDTH, y + 14) + "".join(p) + "</svg>"
-
 
 def draw_stats(d):
     H = 150
@@ -469,13 +400,13 @@ def main():
 
     d = crunch(fetch(login, token))
     files = {
-        "banner.svg": draw_banner(login, d["bio"]),
         "stats.svg": draw_stats(d),
         "streak.svg": draw_streak(d),
         "langs.svg": draw_langs(d),
         "year.svg": draw_year(d),
     }
-    for word in ("about", "stack", "projects", "stats", "how this works"):
+    for word in ("about", "homelab", "stack", "projects", "stats",
+                 "how this works"):
         files[f"hd-{word.replace(' ', '-')}.svg"] = draw_header(word)
 
     changed = sorted(n for n, svg in files.items()
