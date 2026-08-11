@@ -50,7 +50,26 @@ actually understand the first time you have to restore something.
 
 <img src="./hd-stack.svg" width="620" alt="stack"/>
 
-<samp>proxmox &nbsp; zfs &nbsp; docker &nbsp; linux &nbsp; n8n &nbsp; python &nbsp; typescript &nbsp; postgres &nbsp; nginx &nbsp; git</samp>
+<div align="center">
+
+<img src="./stack.svg" width="620" alt="the stack, funnelling onto one machine"/>
+
+</div>
+
+One machine underneath all of it. Dev work sits in a **VM** — its own kernel, so
+I can break it without taking anything else down — and the services run as **LXC
+containers**, which share the host kernel and cost almost nothing to leave
+running. Splitting them that way is the whole point: the thing I experiment on
+and the things that need to stay up are not the same thing.
+
+I work on it from **VS Code over SSH**, which makes the laptop mostly a keyboard.
+Nothing important lives locally, so a reinstall costs an afternoon rather than a
+weekend.
+
+<!-- EDIT ME: the tools and which lane each runs in are the TOOLS list in
+     scripts/make_profile.py — tag a tool "vm" or "ct" and the funnel follows. -->
+
+<samp>proxmox &nbsp; zfs &nbsp; lxc &nbsp; docker &nbsp; linux &nbsp; n8n &nbsp; python &nbsp; typescript &nbsp; postgres &nbsp; nginx &nbsp; git</samp>
 
 <img src="./hd-projects.svg" width="620" alt="projects"/>
 
@@ -93,8 +112,10 @@ Three scripts, split by what feeds them:
   schedule. A [daily action](.github/workflows/stats.yml) runs it against the
   GitHub GraphQL API and commits just the files whose contents changed.
 - [`make_profile.py`](scripts/make_profile.py) draws the boot console, the
-  terminal card and the topology from a config block at the top of the file —
-  edit what it says about me, re-run it.
+  terminal card, the stack funnel and the topology from a config block at the
+  top of the file — edit what it says about me, re-run it. Tagging a tool `vm`
+  or `ct` is enough to move it to the other lane; the funnel is computed from
+  that, not drawn by hand.
 - [`make_portrait.py`](scripts/make_portrait.py) pushes a photo through a
   character ramp it picks by rendering each candidate glyph and measuring the
   ink it actually lays down. Its typeface is [JetBrains Mono](scripts/fonts),
