@@ -77,10 +77,13 @@ STORAGE = ("zfs pool", "snapshots + offsite backup")
 # checked at build time rather than quietly dropped.
 WORKSTATION = "vscode"          # what the ssh session is opened from
 TOOLS = [
+    ("go", "vm"),
     ("python", "vm"),
     ("typescript", "vm"),
+    ("terraform", "vm"),
     ("git", "vm"),
     ("n8n", "ct"),
+    ("mcp servers", "ct"),
     ("docker", "ct"),
     ("postgres", "ct"),
     ("nginx", "ct"),
@@ -100,6 +103,25 @@ NAV = [
     ("access", "network & access"),
     ("why", "why self-host"),
 ]
+
+# The two reader tracks. (anchor, title, subtitle, accent class)
+TRACKS = [
+    ("projects", "how i run work", "kanban · version control · shipping",
+     "acc"),
+    ("building", "how i build it", "proxmox · go · terraform · mcp", "warn"),
+]
+
+# EDIT ME: the board is illustrative — put real work items here.
+BOARD = [
+    ("backlog", ["landing page copy", "invoice automation"]),
+    ("doing", ["n8n → crm sync"]),
+    ("review", ["pve backup job"]),
+    ("done", ["dns migration", "lxc tf module"]),
+]
+CARD_IN_FLIGHT = "weekly report bot"
+
+GIT_MAIN = "main"
+GIT_BRANCH = "feat/backup-job"
 
 # ==================================================================
 
@@ -514,12 +536,21 @@ def draw_stack():
     ssh_x = 20.0
     ws_x, ws_w, ws_y, ws_h = 8.0, 168.0, 6.0, 44.0
     tools_y, chip_h, chip_gap = 60.0, 26.0, 8.0
-    neck_y, lane_y, lane_h = 146.0, 152.0, 46.0
-    srv_y, srv_h = 216.0, 62.0
-    height = srv_y + srv_h + 10
+    lane_h, srv_h = 46.0, 62.0
 
     cols = [(48.0, 272.0, "vm"), (336.0, 276.0, "ct")]
     lane_box = {"vm": (8.0, 292.0), "ct": (312.0, 300.0)}
+
+    # Everything below the tool grid is derived from how tall that grid ends
+    # up. Hardcoding these worked at two rows and silently overlapped at
+    # three, so adding a tool must not be able to break the layout.
+    rows_max = max((len([1 for _, lane in TOOLS if lane == key]) + 1) // 2
+                   for _, _, key in cols)
+    bar_y = tools_y + rows_max * (chip_h + chip_gap) - chip_gap + 10
+    neck_y = bar_y + 18
+    lane_y = neck_y + 6
+    srv_y = lane_y + lane_h + 18
+    height = srv_y + srv_h + 10
     out = [svg_open(WIDTH, height)]
 
     # --- base layer first: everything else is drawn as sitting on it
@@ -563,7 +594,6 @@ def draw_stack():
                        anchor="middle"),
                 begin, dx=0, dur=0.3))
 
-        bar_y = tools_y + rows * (chip_h + chip_gap) - chip_gap + 10
         lx, lw = lane_box[key]
         neck = lx + lw / 2
         begin = 1.34 + ci * 0.1
@@ -599,6 +629,176 @@ def draw_stack():
     out.append(flow(f"M{ssh_x:.1f} {lane_y:.1f}L{ssh_x:.1f} "
                     f"{ws_y + ws_h:.1f}", 3.8, 2.4, r=2.0))
 
+    out.append("</svg>")
+    return "".join(out)
+
+
+# ------------------------------------------------- switch-*.svg / the tracks
+
+def draw_switch(title, subtitle, accent):
+    """One of the two doors into the page.
+
+    A reader here for how I run work and a reader here for what I build want
+    different pages, and there is no way to swap content in place — GitHub
+    allows no CSS or JS in a README. So the honest version of a "switch" is
+    two doors that clearly lead somewhere, which is what this is.
+    """
+    W, H = 296.0, 92.0
+    out = [svg_open(W, H)]
+    out.append(f'<rect x="0.75" y="0.75" width="{W - 1.5:.1f}" '
+               f'height="{H - 1.5:.1f}" rx="10" class="pane ls" '
+               f'stroke-width="1.2"/>')
+    # a spine in the track's colour, so the two read as a pair of choices
+    out.append(f'<rect x="0.75" y="14" width="3.5" height="{H - 28:.1f}" '
+               f'rx="1.75" class="{accent}"/>')
+    out.append(text(22, 38, esc(title), 15, "ink", weight="600"))
+    out.append(text(22, 58, esc(subtitle), 10.5, "fnt"))
+
+    ax, ay = W - 30, H - 26
+    out.append(text(22, ay + 4, "open", 10, accent, weight="600",
+                    spacing="0.6"))
+    out.append(f'<path d="M{ax - 12:.1f} {ay:.1f}H{ax:.1f}'
+               f'M{ax - 4:.1f} {ay - 4:.1f}L{ax:.1f} {ay:.1f}'
+               f'L{ax - 4:.1f} {ay + 4:.1f}" class="as" fill="none" '
+               f'stroke-width="1.5" stroke-linecap="round" '
+               f'stroke-linejoin="round">'
+               f'<animateTransform attributeName="transform" '
+               f'type="translate" values="0 0;3 0;0 0" keyTimes="0;0.5;1" '
+               f'dur="2.6s" begin="0.9s" repeatCount="indefinite"/></path>')
+    out.append("</svg>")
+    return "".join(out)
+
+
+# ---------------------------------------------------------------- kanban.svg
+
+def draw_kanban():
+    """A board with one card actually crossing it.
+
+    A static board is a picture of a process; a card that moves is the
+    process. Only one card travels — four of them would read as noise.
+    """
+    pad, gap = 8.0, 10.0
+    ncol = len(BOARD)
+    colw = (WIDTH - pad * 2 - gap * (ncol - 1)) / ncol
+    head_y, flight_y, card_h, card_gap = 16.0, 32.0, 32.0, 6.0
+    static_y = flight_y + card_h + 14
+    depth = max(len(items) for _, items in BOARD)
+    height = static_y + depth * (card_h + card_gap) + 6
+
+    xs = [pad + i * (colw + gap) for i in range(ncol)]
+    out = [svg_open(WIDTH, height)]
+
+    def card(x, y, w, label, cls="chip", begin=0.0, tone="ink"):
+        return (f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" '
+                f'height="{card_h:.1f}" rx="6" class="{cls} ls" '
+                f'stroke-width="1"/>'
+                + text(x + 11, y + 15, esc(label), 10.5, tone)
+                + f'<rect x="{x + 11:.1f}" y="{y + 21:.1f}" '
+                  f'width="{min(w * 0.34, 42):.1f}" height="3" rx="1.5" '
+                  f'class="fnt" opacity="0.35"/>')
+
+    for i, (name, items) in enumerate(BOARD):
+        x = xs[i]
+        out.append(appear(
+            f'<rect x="{x:.1f}" y="{head_y - 10:.1f}" width="{colw:.1f}" '
+            f'height="{height - head_y + 2:.1f}" rx="8" class="pane" '
+            f'opacity="0.55"/>'
+            + text(x + 11, head_y, name.upper(), 9, "fnt", spacing="1.3")
+            + text(x + colw - 11, head_y, str(len(items)), 9, "fnt",
+                   anchor="end"),
+            0.08 + i * 0.09))
+        for j, label in enumerate(items):
+            out.append(slide_in(
+                card(x + 6, static_y + j * (card_h + card_gap), colw - 12,
+                     label),
+                0.4 + i * 0.1 + j * 0.08, dx=0, dur=0.3))
+
+    # the card in flight: dwells in each column, then restarts from backlog
+    dwell = 1.9
+    cycle = dwell * ncol
+    stops, keys = [], []
+    for i in range(ncol):
+        offset = xs[i] - xs[0]
+        stops += [f"{offset:.1f} 0", f"{offset:.1f} 0"]
+        keys += [f"{i / ncol:.4f}", f"{(i + 0.72) / ncol:.4f}"]
+    stops.append("0 0")
+    keys.append("1.0000")
+
+    out.append(
+        f'<g opacity="0">{fade(1.05, 0.35)}'
+        f'<g><animateTransform attributeName="transform" type="translate" '
+        f'values="{";".join(stops)}" keyTimes="{";".join(keys)}" '
+        f'dur="{cycle:.1f}s" begin="1.4s" repeatCount="indefinite" '
+        f'calcMode="spline" '
+        f'keySplines="{";".join(["0.4 0 0.2 1"] * (len(stops) - 1))}"/>'
+        + card(xs[0] + 6, flight_y, colw - 12, CARD_IN_FLIGHT)
+        # sits on the second line, beside the progress bar — level with the
+        # title it would otherwise run into
+        + f'<circle cx="{xs[0] + colw - 20:.1f}" cy="{flight_y + 22.5:.1f}" '
+          f'r="3" class="acc"><animate attributeName="opacity" '
+          f'values="1;0.3;1" dur="1.9s" repeatCount="indefinite"/></circle>'
+        + "</g></g>")
+
+    out.append("</svg>")
+    return "".join(out)
+
+
+# -------------------------------------------------------------- gitgraph.svg
+
+def draw_gitgraph():
+    """main, a branch off it, and the merge back — drawn left to right."""
+    H = 108.0
+    y_main, y_br = 74.0, 34.0
+    x0, x1 = 76.0, WIDTH - 30
+    out = [svg_open(WIDTH, H)]
+
+    main_dots = [x0 + i * 84 for i in range(6)]
+    fork_x, merge_x = main_dots[1], main_dots[4]
+    br_dots = [fork_x + 84, fork_x + 168]
+
+    def draw_path(d, begin, dur, length, cls="ls", width=2.0):
+        return (f'<path d="{d}" class="{cls}" fill="none" '
+                f'stroke-width="{width}" stroke-linecap="round" '
+                f'stroke-dasharray="{length:.0f}" '
+                f'stroke-dashoffset="{length:.0f}">'
+                f'<animate attributeName="stroke-dashoffset" '
+                f'from="{length:.0f}" to="0" begin="{begin:.2f}s" '
+                f'dur="{dur:.2f}s" fill="freeze"/></path>')
+
+    out.append(appear(text(30, y_main + 4, GIT_MAIN, 10.5, "mut"), 0.05, 0.3))
+    out.append(draw_path(f"M{x0:.0f} {y_main:.0f}H{x1:.0f}", 0.15, 1.5,
+                         x1 - x0))
+    out.append(appear(text(fork_x, y_br - 16, esc(GIT_BRANCH), 10, "acc"),
+                      0.75, 0.3))
+    out.append(draw_path(
+        f"M{fork_x:.0f} {y_main:.0f}C{fork_x + 26:.0f} {y_main:.0f} "
+        f"{fork_x + 14:.0f} {y_br:.0f} {fork_x + 40:.0f} {y_br:.0f}"
+        f"H{merge_x - 40:.0f}C{merge_x - 14:.0f} {y_br:.0f} "
+        f"{merge_x - 26:.0f} {y_main:.0f} {merge_x:.0f} {y_main:.0f}",
+        0.55, 1.3, (merge_x - fork_x) + 90, cls="as"))
+
+    for i, cx in enumerate(main_dots):
+        begin = 0.25 + i * 0.26
+        out.append(f'<circle cx="{cx:.0f}" cy="{y_main:.0f}" r="0" '
+                   f'class="pane ls" stroke-width="2">'
+                   f'<animate attributeName="r" from="0" to="5.5" '
+                   f'begin="{begin:.2f}s" dur="0.22s" fill="freeze"/>'
+                   f"</circle>")
+    for i, cx in enumerate(br_dots):
+        begin = 0.95 + i * 0.3
+        out.append(f'<circle cx="{cx:.0f}" cy="{y_br:.0f}" r="0" '
+                   f'class="acc"><animate attributeName="r" from="0" '
+                   f'to="5" begin="{begin:.2f}s" dur="0.22s" '
+                   f'fill="freeze"/></circle>')
+
+    # the merge commit reads differently from an ordinary one
+    out.append(f'<circle cx="{merge_x:.0f}" cy="{y_main:.0f}" r="0" '
+               f'class="acc"><animate attributeName="r" from="0" to="5.5" '
+               f'begin="1.85s" dur="0.25s" fill="freeze"/></circle>')
+    out.append(appear(text(merge_x, y_main + 22, "merge", 9, "fnt",
+                           anchor="middle"), 2.05, 0.3))
+    out.append(appear(text(x1, y_main - 14, "reviewed, then merged", 9, "fnt",
+                           anchor="end"), 2.2, 0.3))
     out.append("</svg>")
     return "".join(out)
 
@@ -665,7 +865,11 @@ def main():
     made = [write("boot.svg", draw_boot()),
             write("whoami.svg", draw_whoami()),
             write("stack.svg", draw_stack()),
-            write("infra.svg", draw_infra())]
+            write("infra.svg", draw_infra()),
+            write("kanban.svg", draw_kanban()),
+            write("gitgraph.svg", draw_gitgraph())]
+    made += [write(f"switch-{key}.svg", draw_switch(title, sub, accent))
+             for key, title, sub, accent in TRACKS]
     made += [write(f"nav-{key}.svg", draw_nav(label)) for key, label in NAV]
     for line in made:
         print(line)

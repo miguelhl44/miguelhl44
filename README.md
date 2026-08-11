@@ -24,7 +24,85 @@ it works on the day it ships.
 Mostly that looks like small automations that remove a manual step, sites that
 load fast, and a homelab I run properly instead of leaving it to rot.
 
-<img src="./hd-homelab.svg" width="620" alt="homelab"/>
+<div align="center">
+
+<br>
+
+**Two ways through this page — pick whichever you came for.**
+
+<a href="#projects"><img src="./switch-projects.svg" alt="how i run work — kanban, version control, shipping"/></a>
+<a href="#building"><img src="./switch-building.svg" alt="how i build it — proxmox, go, terraform, mcp"/></a>
+
+</div>
+
+<a id="projects"></a>
+
+<img src="./hd-how-i-run-work.svg" width="620" alt="how i run work"/>
+
+<div align="center">
+
+<img src="./kanban.svg" width="620" alt="kanban board"/>
+
+</div>
+
+Bootstrapping without a team means the process has to survive me forgetting
+things. A board is the cheapest way to do that: work is visible, and the column
+a card sits in is the honest answer to "what state is this actually in", which
+is not the same as how busy I feel.
+
+The column I care about is **doing**, and the rule is that it stays small.
+Three things half-finished is worse than one thing shipped, because unfinished
+work has a holding cost — you pay to remember it every time you look at the
+board. Limiting what is in flight is not discipline for its own sake, it is
+what makes the rest of the columns tell the truth.
+
+<div align="center">
+
+<img src="./gitgraph.svg" width="620" alt="branch, review, merge"/>
+
+</div>
+
+Same idea in version control. Work happens on a branch, `main` stays something
+I could deploy right now, and a change gets read before it lands — even when
+the person reading it is me a day later. Reviewing my own branch has caught
+more than it has any right to; writing down what a change does forces me to
+notice when I cannot explain it.
+
+<details>
+<summary><b>&nbsp;How I keep a project honest when nobody is checking</b></summary>
+
+<br>
+
+**Write the finish line first.** Before starting I write what "done" means in
+one sentence. If I cannot, the task is really two tasks wearing a coat, and
+splitting it there saves the argument with myself later.
+
+**Small commits, real messages.** A commit that says `fix stuff` is a note to
+nobody. The one that says why the change was needed is the note I will actually
+want in six months, when the code makes sense but the reason does not.
+
+**Timebox the research.** It is easy to spend an evening reading about the
+correct approach and ship nothing. I give unknowns a fixed slot; when it runs
+out I take the best option I have and write down what I would revisit.
+
+**Stop counting hours, count shipped things.** The economics half of my degree
+made this concrete: effort is a cost, not an output. What matters is whether
+the manual step is actually gone.
+
+<!-- EDIT ME: swap in your real tools — Jira/Linear/GitHub Projects, whatever
+     you use — and the way your board is really laid out. -->
+
+</details>
+
+<div align="center">
+
+<a href="#building"><img src="./switch-building.svg" alt="switch to how i build it"/></a>
+
+</div>
+
+<a id="building"></a>
+
+<img src="./hd-how-i-build-it.svg" width="620" alt="how i build it"/>
 
 <div align="center">
 
@@ -152,8 +230,6 @@ meter me. Not for everything.
 
 </details>
 
-<img src="./hd-stack.svg" width="620" alt="stack"/>
-
 <div align="center">
 
 <a href="#guests"><img src="./stack.svg" width="620" alt="the stack, funnelling onto one machine"/></a>
@@ -173,9 +249,46 @@ weekend.
 <!-- EDIT ME: the tools and which lane each runs in are the TOOLS list in
      scripts/make_profile.py — tag a tool "vm" or "ct" and the funnel follows. -->
 
-<samp>proxmox &nbsp; zfs &nbsp; lxc &nbsp; docker &nbsp; linux &nbsp; n8n &nbsp; python &nbsp; typescript &nbsp; postgres &nbsp; nginx &nbsp; git</samp>
+<details>
+<summary><b>&nbsp;Go, Terraform and MCP — the parts I write myself</b></summary>
 
-<img src="./hd-projects.svg" width="620" alt="projects"/>
+<br>
+
+**Go, for the things that have to just run.** A single static binary with no
+runtime to install is the right shape for a box I want to stay boring: drop it
+in a container, point systemd at it, and it does not break because something
+upgraded a dependency underneath it. It is also small enough in memory that
+running several alongside everything else is not a decision I have to think
+about.
+
+**Terraform, so the lab is describable.** The point is not that clicking through
+the Proxmox UI is slow — it is that clicking leaves no record. A guest defined
+in code can be read, diffed and recreated; a guest defined by remembering what I
+clicked eight months ago cannot. This is the same instinct as the ZFS snapshots:
+make being wrong cheap to undo.
+
+**MCP servers, to give a model real access instead of a description.** Writing
+my own means deciding exactly what it can see and do, which is the whole
+security question in one place rather than scattered. A narrow tool that returns
+real data beats a broad one that guesses.
+
+The thread through all three: I would rather write a small thing I fully
+understand than adopt a large thing I do not. Not because it is always the right
+trade — it is not, and I have wasted time on it — but because understanding the
+layer under you is most of what a homelab is for.
+
+<!-- EDIT ME: name the actual Go tools and MCP servers you have built, and what
+     your Terraform actually manages. Specifics beat principles here. -->
+
+</details>
+
+<div align="center">
+
+<a href="#projects"><img src="./switch-projects.svg" alt="switch to how i run work"/></a>
+
+</div>
+
+<img src="./hd-repos.svg" width="620" alt="repos"/>
 
 <!-- EDIT ME: one block per project, a line or two each -->
 **[mathias-n8n](https://github.com/miguelhl44/mathias-n8n)** &nbsp;·&nbsp; <samp>n8n</samp><br>

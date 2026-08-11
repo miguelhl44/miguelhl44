@@ -405,8 +405,8 @@ def main():
         "langs.svg": draw_langs(d),
         "year.svg": draw_year(d),
     }
-    for word in ("about", "homelab", "stack", "projects", "stats",
-                 "how this works"):
+    for word in ("about", "how i run work", "how i build it", "repos",
+                 "stats", "how this works"):
         files[f"hd-{word.replace(' ', '-')}.svg"] = draw_header(word)
 
     changed = sorted(n for n, svg in files.items()
