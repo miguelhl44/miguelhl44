@@ -605,7 +605,17 @@ def draw_stack():
 
 # ---------------------------------------------------------------- nav-*.svg
 
-NAV_W, NAV_H = 148.0, 34.0
+NAV_H, NAV_FS = 34.0, 11.0
+NAV_PAD, NAV_ARROW = 15.0, 26.0
+
+
+def nav_width(label):
+    """Sized to its own label, so a longer one never crowds the arrow.
+
+    The README omits width= on these images and lets them render at their
+    intrinsic size — that way the two can't drift apart when a label changes.
+    """
+    return round(NAV_PAD * 2 + len(label) * NAV_FS * CW + NAV_ARROW, 1)
 
 
 def draw_nav(label):
@@ -616,12 +626,13 @@ def draw_nav(label):
     saying "this goes somewhere", which is why it is drawn rather than
     implied by colour alone.
     """
-    out = [svg_open(NAV_W, NAV_H)]
-    out.append(f'<rect x="0.6" y="0.6" width="{NAV_W - 1.2:.1f}" '
+    w = nav_width(label)
+    out = [svg_open(w, NAV_H)]
+    out.append(f'<rect x="0.6" y="0.6" width="{w - 1.2:.1f}" '
                f'height="{NAV_H - 1.2:.1f}" rx="{NAV_H / 2:.1f}" '
                f'class="chip ls" stroke-width="1"/>')
-    out.append(text(15, NAV_H / 2 + 4, esc(label), 11, "ink"))
-    ax = NAV_W - 22
+    out.append(text(NAV_PAD, NAV_H / 2 + 4, esc(label), NAV_FS, "ink"))
+    ax = w - NAV_PAD - 7
     ay = NAV_H / 2
     out.append(f'<path d="M{ax - 4:.1f} {ay:.1f}H{ax + 4:.1f}'
                f'M{ax + 1:.1f} {ay - 3.4:.1f}L{ax + 4.4:.1f} {ay:.1f}'

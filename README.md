@@ -30,10 +30,10 @@ load fast, and a homelab I run properly instead of leaving it to rot.
 
 <a href="#guests"><img src="./infra.svg" width="620" alt="homelab topology"/></a>
 
-<a href="#guests"><img src="./nav-guests.svg" width="148" alt="vm / ct split"/></a>
-<a href="#storage"><img src="./nav-storage.svg" width="148" alt="storage and backups"/></a>
-<a href="#access"><img src="./nav-access.svg" width="148" alt="network and access"/></a>
-<a href="#why"><img src="./nav-why.svg" width="148" alt="why self-host"/></a>
+<a href="#guests"><img src="./nav-guests.svg" alt="vm / ct split"/></a>
+<a href="#storage"><img src="./nav-storage.svg" alt="storage and backups"/></a>
+<a href="#access"><img src="./nav-access.svg" alt="network and access"/></a>
+<a href="#why"><img src="./nav-why.svg" alt="why self-host"/></a>
 
 </div>
 
