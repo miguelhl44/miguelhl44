@@ -59,7 +59,10 @@ LH = 8.0                # line height, px — tight, so cells stay square-ish
 ADV = 0.6               # JetBrains Mono advance width, em
 PAD = 6.0
 ROW_DUR = 0.09          # one row's wipe
-ROW_STEP = 0.075        # stagger between rows
+ROW_STEP = 0.042        # stagger between rows
+ROW_FADE = 0.55         # each row keeps easing up long after its wipe lands,
+                        # so a soft band travels down the image instead of
+                        # rows snapping on one at a time
 
 INK_LIGHT, INK_DARK = "#30363d", "#c9d1d9"
 CURSOR = "#2da44e"
@@ -185,16 +188,22 @@ def build_svg(grid, ramp, woff):
             f'<animate attributeName="width" from="0" to="{w_px:.1f}" '
             f'begin="{begin:.2f}s" dur="{ROW_DUR}s" fill="freeze"/>'
             f"</rect></clipPath>"
+            f'<g opacity="0" clip-path="url(#{cid})">'
+            f'<animate attributeName="opacity" from="0" to="1" '
+            f'begin="{begin:.2f}s" dur="{ROW_FADE}s" fill="freeze" '
+            f'calcMode="spline" keySplines="0.3 0.7 0.3 1" '
+            f'keyTimes="0;1" values="0;1"/>'
             f'<text x="{PAD}" y="{baseline:.1f}" class="i" '
-            f'xml:space="preserve" clip-path="url(#{cid})">{esc(line)}</text>'
+            f'xml:space="preserve">{esc(line)}</text></g>'
             f'<rect x="{PAD}" y="{y_top:.1f}" width="{cw:.1f}" '
             f'height="{LH}" class="c" opacity="0">'
-            f'<set attributeName="opacity" to="0.8" begin="{begin:.2f}s"/>'
+            f'<set attributeName="opacity" to="0.55" begin="{begin:.2f}s"/>'
             f'<animate attributeName="x" from="{PAD}" '
             f'to="{PAD + w_px:.1f}" begin="{begin:.2f}s" dur="{ROW_DUR}s" '
             f'fill="freeze"/>'
-            f'<set attributeName="opacity" to="0" '
-            f'begin="{begin + ROW_DUR:.2f}s"/></rect>'
+            f'<animate attributeName="opacity" from="0.55" to="0" '
+            f'begin="{begin + ROW_DUR:.2f}s" dur="0.18s" fill="freeze"/>'
+            f"</rect>"
         )
     out.append("</svg>")
     return "".join(out)

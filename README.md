@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="./boot.svg" width="620" alt="boot sequence"/>
-
 <img src="./portrait.svg" width="420" alt="ASCII portrait"/>
+
+<img src="./boot.svg" width="620" alt="boot sequence"/>
 
 <img src="./whoami.svg" width="620" alt="whoami"/>
 
@@ -28,7 +28,12 @@ load fast, and a homelab I run properly instead of leaving it to rot.
 
 <div align="center">
 
-<img src="./infra.svg" width="620" alt="homelab topology"/>
+<a href="#guests"><img src="./infra.svg" width="620" alt="homelab topology"/></a>
+
+<a href="#guests"><img src="./nav-guests.svg" width="148" alt="vm / ct split"/></a>
+<a href="#storage"><img src="./nav-storage.svg" width="148" alt="storage and backups"/></a>
+<a href="#access"><img src="./nav-access.svg" width="148" alt="network and access"/></a>
+<a href="#why"><img src="./nav-why.svg" width="148" alt="why self-host"/></a>
 
 </div>
 
@@ -48,11 +53,110 @@ actually understand the first time you have to restore something.
      (the SERVICES list). Swap them for what you really run, then re-run
      `python3 scripts/make_profile.py`. -->
 
+<a id="guests"></a>
+
+<details>
+<summary><b>&nbsp;The guest split — a VM to break, containers to keep up</b></summary>
+
+<br>
+
+The split is not about tidiness, it is about what a mistake costs.
+
+**Dev lives in a VM.** It has its own kernel, so I can install anything, load
+modules, and change things that a container is not allowed to touch. It is the
+box I am allowed to break, and a snapshot before an experiment means breaking
+it costs a rollback instead of an evening.
+
+**Services live in LXC containers.** They share the host kernel, so they boot in
+about a second and cost roughly what the process itself costs — no second kernel
+sitting in RAM doing nothing. Running eight of them is realistic on one machine
+in a way that eight VMs would not be.
+
+The rule I use when adding something new: if it needs its own kernel, or I do
+not trust it, it gets a VM. If it is a service I trust to sit still and do one
+job, it gets a container.
+
+</details>
+
+<a id="storage"></a>
+
+<details>
+<summary><b>&nbsp;Storage and backups — why ZFS is the point</b></summary>
+
+<br>
+
+**Snapshots make changes reversible.** Taking one before an upgrade turns "I
+hope this works" into "I can undo this", which is the difference between
+tinkering carefully and tinkering freely. They are cheap because they only
+store what changed.
+
+**Scrubbing catches bit rot.** ZFS checksums every block and verifies them on a
+schedule, so silent corruption is found and repaired rather than sitting in a
+file until the day I open it. Without that, a backup can faithfully preserve
+data that is already broken.
+
+**A snapshot is not a backup.** It lives on the same pool, so it does not
+survive the pool dying. Anything I would be upset to lose exists somewhere the
+server cannot reach on its own.
+
+The honest test is restoring, not backing up. A backup nobody has restored is a
+belief, not a backup.
+
+<!-- EDIT ME: add your real snapshot/scrub/backup schedule here. -->
+
+</details>
+
+<a id="access"></a>
+
+<details>
+<summary><b>&nbsp;Network and access — how I actually reach it</b></summary>
+
+<br>
+
+I work on the server from **VS Code over SSH**, so the editor runs on my laptop
+while everything it touches — the files, the language server, the terminal —
+runs on the guest. The laptop stops being a machine I have to keep configured
+and becomes a keyboard and a screen.
+
+Keys, not passwords. The management interface is not something I expose to the
+internet; reaching it from outside goes through a VPN rather than a port
+forward. Anything that genuinely needs to be public sits behind a reverse proxy
+that terminates TLS in one place, so certificates are one job instead of one job
+per service.
+
+<!-- EDIT ME: swap in your real firewall, VPN and reverse proxy choices. -->
+
+</details>
+
+<a id="why"></a>
+
+<details>
+<summary><b>&nbsp;Why self-host any of this</b></summary>
+
+<br>
+
+Bootstrapping is the short answer. A subscription that charges per seat or per
+run gets more expensive exactly when something starts working, which is the
+worst possible time to be punished for it. Hardware I already own costs the same
+whether an automation runs ten times a month or ten thousand.
+
+The longer answer is that operating something teaches what reading about it
+does not. Restoring a backup, chasing why a container will not start, watching a
+disk fill — those are the moments where you find out which parts you actually
+understood. That is difficult to get from a tutorial and it is most of why the
+lab exists.
+
+The trade is real, though: I am also the person who gets paged. Self-hosting is
+worth it for the things I want to understand and the things that would otherwise
+meter me. Not for everything.
+
+</details>
+
 <img src="./hd-stack.svg" width="620" alt="stack"/>
 
 <div align="center">
 
-<img src="./stack.svg" width="620" alt="the stack, funnelling onto one machine"/>
+<a href="#guests"><img src="./stack.svg" width="620" alt="the stack, funnelling onto one machine"/></a>
 
 </div>
 

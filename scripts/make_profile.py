@@ -90,6 +90,17 @@ LANES = [
     ("ct", "CT", "services", "lxc · shared kernel"),
 ]
 
+# Buttons under the topology. Each is its own file because a link has to wrap
+# the whole image: an SVG loaded through <img> is a picture, not a document,
+# so <a> inside it never fires and one big diagram can only ever have one
+# destination. The key doubles as the anchor it jumps to in the README.
+NAV = [
+    ("guests", "vm / ct split"),
+    ("storage", "storage & backups"),
+    ("access", "network & access"),
+    ("why", "why self-host"),
+]
+
 # ==================================================================
 
 WIDTH = 620
@@ -592,6 +603,38 @@ def draw_stack():
     return "".join(out)
 
 
+# ---------------------------------------------------------------- nav-*.svg
+
+NAV_W, NAV_H = 148.0, 34.0
+
+
+def draw_nav(label):
+    """One button. It has to look pressable without a hover state to help.
+
+    Nothing inside an <img> receives pointer events, so :hover and SMIL's
+    mouseover both do nothing here. The arrow is doing the whole job of
+    saying "this goes somewhere", which is why it is drawn rather than
+    implied by colour alone.
+    """
+    out = [svg_open(NAV_W, NAV_H)]
+    out.append(f'<rect x="0.6" y="0.6" width="{NAV_W - 1.2:.1f}" '
+               f'height="{NAV_H - 1.2:.1f}" rx="{NAV_H / 2:.1f}" '
+               f'class="chip ls" stroke-width="1"/>')
+    out.append(text(15, NAV_H / 2 + 4, esc(label), 11, "ink"))
+    ax = NAV_W - 22
+    ay = NAV_H / 2
+    out.append(f'<path d="M{ax - 4:.1f} {ay:.1f}H{ax + 4:.1f}'
+               f'M{ax + 1:.1f} {ay - 3.4:.1f}L{ax + 4.4:.1f} {ay:.1f}'
+               f'L{ax + 1:.1f} {ay + 3.4:.1f}" class="as" fill="none" '
+               f'stroke-width="1.4" stroke-linecap="round" '
+               f'stroke-linejoin="round">'
+               f'<animateTransform attributeName="transform" '
+               f'type="translate" values="0 0;2.5 0;0 0" keyTimes="0;0.5;1" '
+               f'dur="2.4s" begin="1.2s" repeatCount="indefinite"/></path>')
+    out.append("</svg>")
+    return "".join(out)
+
+
 # ---------------------------------------------------------------- main
 
 def write(name, svg):
@@ -608,10 +651,12 @@ def write(name, svg):
 
 
 def main():
-    for line in (write("boot.svg", draw_boot()),
-                 write("whoami.svg", draw_whoami()),
-                 write("stack.svg", draw_stack()),
-                 write("infra.svg", draw_infra())):
+    made = [write("boot.svg", draw_boot()),
+            write("whoami.svg", draw_whoami()),
+            write("stack.svg", draw_stack()),
+            write("infra.svg", draw_infra())]
+    made += [write(f"nav-{key}.svg", draw_nav(label)) for key, label in NAV]
+    for line in made:
         print(line)
 
 
