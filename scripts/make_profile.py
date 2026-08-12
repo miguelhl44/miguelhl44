@@ -7,7 +7,7 @@ Standard library only, no API, no schedule — everything here is fed by the
 CONFIG block below, so this runs when you change what the page says about
 you. There is nothing on the page that goes stale on its own.
 
-  boot.svg      a console at the foot of the page listing what is loading
+  loading.svg   a console at the foot of the page listing what is loading
                 next, each line reporting in with its own [ OK ]
   whoami.svg    a terminal window that types out who you are
   hd-*.svg      section headings — images, because GitHub strips CSS from
@@ -53,11 +53,11 @@ FACTS = [
     ("location", "denmark"),
 ]
 
-# The boot console — it closes the page rather than opening it, so it reads
+# The closing console. It ends the page rather than opening it, so it reads
 # as what is loading next. Each line is (label, is_final_target); the final
 # one is drawn in the warm accent instead of green.
-BOOT_HEAD = "currently loading"
-BOOT = [
+LOADING_HEAD = "currently loading"
+LOADING = [
     ("building reliable software and internal tools", False),
     ("data pipelines, processing and automation", False),
     ("linux, virtualization and infrastructure", False),
@@ -256,18 +256,18 @@ def panel(x, y, w, h, cls="pane", r=8, stroke="ls", sw=1):
             f'rx="{r}" class="{cls} {stroke}" stroke-width="{sw}"/>')
 
 
-# ---------------------------------------------------------------- boot.svg
+# ------------------------------------------------------------- loading.svg
 
-def draw_boot():
+def draw_loading():
     """A boot console: phosphor flash, then services reporting in."""
     FS, LH, PAD = 12.5, 19.0, 4.0
     COLS = 74                       # line width in characters
     STATUS = "[  OK  ]"
     lead_in, step = 0.45, 0.17
 
-    lines = [("", f"{NAME} — {BOOT_HEAD}", None)]
+    lines = [("", f"{NAME} — {LOADING_HEAD}", None)]
     t = 0.118
-    for label, final in BOOT:
+    for label, final in LOADING:
         lines.append((f"[ {t:.3f} ] ", label, "final" if final else "ok"))
         t += 0.137
 
@@ -983,7 +983,7 @@ def write(name, svg):
 
 
 def main():
-    made = [write("boot.svg", draw_boot()),
+    made = [write("loading.svg", draw_loading()),
             write("whoami.svg", draw_whoami()),
             write("stack.svg", draw_stack()),
             write("infra.svg", draw_infra()),

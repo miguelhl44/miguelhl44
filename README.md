@@ -317,7 +317,7 @@ infrastructure meet.
 
 <div align="center">
 
-<img src="./boot.svg" width="620" alt="Currently loading: building reliable software and internal tools; data pipelines, processing and automation; Linux, virtualization and infrastructure; cloud and self-hosted systems; APIs and system integrations; AI tooling, agents and MCP; developer tooling and reproducible environments; turning manual workflows into systems."/>
+<img src="./loading.svg" width="620" alt="Currently loading: building reliable software and internal tools; data pipelines, processing and automation; Linux, virtualization and infrastructure; cloud and self-hosted systems; APIs and system integrations; AI tooling, agents and MCP; developer tooling and reproducible environments; turning manual workflows into systems."/>
 
 </div>
 
