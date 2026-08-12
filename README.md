@@ -2,8 +2,6 @@
 
 <img src="./portrait.svg" width="420" alt="ASCII portrait"/>
 
-<img src="./boot.svg" width="620" alt="boot sequence"/>
-
 <img src="./whoami.svg" width="620" alt="whoami"/>
 
 <!-- EDIT ME: your real links, or delete the line -->
@@ -312,69 +310,18 @@ Automation workflows — the glue that removes the manual step between two tools
 **[miguelhl44](https://github.com/miguelhl44/miguelhl44)** &nbsp;·&nbsp; <samp>python, svg</samp><br>
 This page. Every graphic on it is drawn by a script in this repo.
 
-<img src="./hd-stats.svg" width="620" alt="stats"/>
-
-<div align="center">
-
-<img src="./stats.svg" width="620" alt="Contributions in the last year"/>
-
-<img src="./streak.svg" width="620" alt="Current and longest contribution streak"/>
-
-<img src="./langs.svg" width="620" alt="Top languages across public repositories"/>
-
-<img src="./year.svg" width="620" alt="Contribution heatmap for the last year"/>
-
-</div>
-
 <img src="./hd-interests.svg" width="620" alt="what i'm interested in"/>
 
 I'm currently most interested in the space where software, data and
-infrastructure meet:
+infrastructure meet.
 
-- Building reliable software and internal tools
-- Data pipelines, processing and automation
-- Linux, virtualization and infrastructure
-- Cloud and self-hosted systems
-- APIs and system integrations
-- AI tooling, agents and MCP
-- Developer tooling and reproducible environments
-- Turning manual workflows into systems
+<div align="center">
+
+<img src="./boot.svg" width="620" alt="Currently loading: building reliable software and internal tools; data pipelines, processing and automation; Linux, virtualization and infrastructure; cloud and self-hosted systems; APIs and system integrations; AI tooling, agents and MCP; developer tooling and reproducible environments; turning manual workflows into systems."/>
+
+</div>
 
 I'm less interested in collecting technologies than in understanding how they
 combine to solve a real problem. If a project teaches me something useful and
 ends up making something faster, simpler, cheaper or more reliable, it was
 probably worth building.
-
-<img src="./hd-how-this-works.svg" width="620" alt="how this works"/>
-
-Every graphic here is generated, not embedded from someone else's server.
-Nothing is fetched from a third party, so nothing on this page can rate-limit,
-watermark, or go dark.
-
-They animate with SMIL — declarative `<animate>` tags inside the SVG itself —
-because GitHub strips `<script>` and `<style>` from READMEs but leaves SVG
-documents loaded through `<img>` alone. That is also why the section headings
-are images: an SVG is the only way to put this page's own typeface on them.
-Colours come from a `prefers-color-scheme` query inside each file.
-
-Three scripts, split by what feeds them:
-
-- [`generate_stats.py`](scripts/generate_stats.py) is the only one on a
-  schedule. A [daily action](.github/workflows/stats.yml) runs it against the
-  GitHub GraphQL API and commits just the files whose contents changed.
-- [`make_profile.py`](scripts/make_profile.py) draws the boot console, the
-  terminal card, the loop, the board, the git graph, the stack funnel and the
-  topology from a config block at the top of the file. Tagging a tool `vm` or
-  `ct` is enough to move it to the other lane; the funnel is computed from
-  that, not drawn by hand.
-- [`make_portrait.py`](scripts/make_portrait.py) pushes a photo through a
-  character ramp it picks by rendering each candidate glyph and measuring the
-  ink it actually lays down. Its typeface is [JetBrains Mono](scripts/fonts),
-  subset to the eleven glyphs the ramp uses and inlined as base64 — an SVG in
-  an `<img>` cannot fetch a linked font, and the grid assumes an advance width
-  of exactly 0.6 em.
-
-No number on this page is decorative. The contribution figures come from the
-API, the guest count under the node is derived from the tiles drawn beside it,
-and there are no invented load averages — a reading that looks live and isn't
-is worse than no reading at all.

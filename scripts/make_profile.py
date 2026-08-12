@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Draw the hand-written graphics in the README.
+"""Draw every graphic in the README except the portrait.
 
     python3 scripts/make_profile.py
 
-Standard library only. Unlike generate_stats.py these are not fed by an API,
-they are fed by the CONFIG block below — so this runs when you change what it
-says about you, not on a schedule.
+Standard library only, no API, no schedule — everything here is fed by the
+CONFIG block below, so this runs when you change what the page says about
+you. There is nothing on the page that goes stale on its own.
 
-  boot.svg      a boot console that plays as the page opens
+  boot.svg      a console at the foot of the page listing what is loading
+                next, each line reporting in with its own [ OK ]
   whoami.svg    a terminal window that types out who you are
+  hd-*.svg      section headings — images, because GitHub strips CSS from
+                markdown and this is the only way to set them in this face
   loop.svg      find a problem, build, use, observe, improve — the shape the
                 rest of the page is evidence for
   kanban.svg    a board with one card actually crossing it
@@ -50,16 +53,31 @@ FACTS = [
     ("location", "denmark"),
 ]
 
-# The boot console. Each line is (label, is_final_target).
+# The boot console — it closes the page rather than opening it, so it reads
+# as what is loading next. Each line is (label, is_final_target); the final
+# one is drawn in the warm accent instead of green.
+BOOT_HEAD = "currently loading"
 BOOT = [
-    ("mounting /dev/curiosity", False),
-    ("loading business-economics + it", False),
-    ("resolving problem → solution", False),
-    ("starting build-use-improve.loop", False),
-    ("bringing up proxmox-ve", False),
-    ("attaching vm + lxc guests", False),
-    ("mounting zfs pool + backups", False),
-    ("reached target make-something-useful", True),
+    ("building reliable software and internal tools", False),
+    ("data pipelines, processing and automation", False),
+    ("linux, virtualization and infrastructure", False),
+    ("cloud and self-hosted systems", False),
+    ("apis and system integrations", False),
+    ("ai tooling, agents and mcp", False),
+    ("developer tooling and reproducible environments", False),
+    ("turning manual workflows into systems", False),
+    ("reached target solve-something-real", True),
+]
+
+# Section headings. The slug is explicit so a heading can carry punctuation
+# without it landing in a filename.
+SECTIONS = [
+    ("about", "about"),
+    ("build it. use it. improve it.", "loop"),
+    ("how i work", "how-i-work"),
+    ("the homelab", "homelab"),
+    ("repos", "repos"),
+    ("what i'm interested in", "interests"),
 ]
 
 # The loop the whole page is about: a problem goes in, value comes out, and
@@ -247,7 +265,7 @@ def draw_boot():
     STATUS = "[  OK  ]"
     lead_in, step = 0.45, 0.17
 
-    lines = [("", f"{NAME} — cold boot", None)]
+    lines = [("", f"{NAME} — {BOOT_HEAD}", None)]
     t = 0.118
     for label, final in BOOT:
         lines.append((f"[ {t:.3f} ] ", label, "final" if final else "ok"))
@@ -880,6 +898,32 @@ def draw_gitgraph():
     return "".join(out)
 
 
+# ------------------------------------------------------------------ hd-*.svg
+
+def draw_header(word):
+    """A section heading, drawn rather than written.
+
+    GitHub strips CSS from markdown, so a real markdown heading can only ever
+    be GitHub's own sans. An image is the only way to put this page's own
+    face on it. The rule starts past the longest plausible advance, so a
+    narrower monospace on the reader's machine widens the gap instead of
+    colliding with the text.
+    """
+    fs, height = 15.0, 26.0
+    tw = (len(word) + 3) * fs * CW + 12
+    out = [svg_open(WIDTH, height)]
+    out.append(appear(
+        f'<text x="0" y="18" font-size="{fs}" font-weight="600" '
+        f'xml:space="preserve"><tspan class="acc">// </tspan>'
+        f'<tspan class="ink">{esc(word)}</tspan></text>', 0.05, 0.3))
+    out.append(f'<line x1="{tw:.0f}" y1="13" x2="{tw:.0f}" y2="13" '
+               f'class="ls" stroke-width="1">'
+               f'<animate attributeName="x2" from="{tw:.0f}" to="{WIDTH}" '
+               f'begin="0.15s" dur="0.55s" fill="freeze"/></line>')
+    out.append("</svg>")
+    return "".join(out)
+
+
 # ---------------------------------------------------------------- nav-*.svg
 
 NAV_H, NAV_FS = 34.0, 11.0
@@ -947,6 +991,8 @@ def main():
             write("kanban.svg", draw_kanban()),
             write("gitgraph.svg", draw_gitgraph())]
     made += [write(f"nav-{key}.svg", draw_nav(label)) for key, label in NAV]
+    made += [write(f"hd-{slug}.svg", draw_header(word))
+             for word, slug in SECTIONS]
     for line in made:
         print(line)
 
