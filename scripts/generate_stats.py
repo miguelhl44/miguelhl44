@@ -405,9 +405,17 @@ def main():
         "langs.svg": draw_langs(d),
         "year.svg": draw_year(d),
     }
-    for word in ("about", "how i run work", "how i build it", "repos",
-                 "stats", "how this works"):
-        files[f"hd-{word.replace(' ', '-')}.svg"] = draw_header(word)
+    # (heading, filename slug) — the slug is explicit so a heading can carry
+    # punctuation without it landing in a filename.
+    for word, slug in (("about", "about"),
+                       ("build it. use it. improve it.", "loop"),
+                       ("how i work", "how-i-work"),
+                       ("the homelab", "homelab"),
+                       ("repos", "repos"),
+                       ("stats", "stats"),
+                       ("what i'm interested in", "interests"),
+                       ("how this works", "how-this-works")):
+        files[f"hd-{slug}.svg"] = draw_header(word)
 
     changed = sorted(n for n, svg in files.items()
                      if write_if_changed(os.path.join(out_dir, n), svg))

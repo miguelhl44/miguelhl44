@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Draw the three hand-written graphics at the top of the README.
+"""Draw the hand-written graphics in the README.
 
     python3 scripts/make_profile.py
 
@@ -7,10 +7,17 @@ Standard library only. Unlike generate_stats.py these are not fed by an API,
 they are fed by the CONFIG block below — so this runs when you change what it
 says about you, not on a schedule.
 
-  boot.svg    a boot console that plays as the page opens
-  whoami.svg  a terminal window that types out who you are
-  infra.svg   the homelab as a topology, with traffic still moving on it
-              after the diagram has finished drawing
+  boot.svg      a boot console that plays as the page opens
+  whoami.svg    a terminal window that types out who you are
+  loop.svg      find a problem, build, use, observe, improve — the shape the
+                rest of the page is evidence for
+  kanban.svg    a board with one card actually crossing it
+  gitgraph.svg  branch, review, merge
+  stack.svg     the tools funnelling into the lane each one runs in, on one
+                machine that assembles first as the base layer
+  infra.svg     the homelab as a topology, with traffic still moving on it
+                after the diagram has finished drawing
+  nav-*.svg     buttons; one file each, because a link wraps the whole image
 
 Motion is SMIL for the same reason as everywhere else here: GitHub strips
 <script> from READMEs, but an SVG loaded through <img> animates fine.
@@ -32,13 +39,14 @@ ROOT = os.path.dirname(HERE)
 
 USER = "miguelhl44"
 HOST = "homelab"
+NAME = "mikkel"
 
 # The identity card. Keys are padded to the longest one automatically.
 FACTS = [
-    ("role", "bootstrapper · marketing + it"),
+    ("role", "builder · developer · bootstrapper"),
     ("studying", "business economics & it"),
-    ("building", "automations, sites, small sharp tools"),
-    ("homelab", "proxmox ve · zfs · docker"),
+    ("method", "find a problem → build → use → iterate"),
+    ("runs", "the infrastructure, not just the code"),
     ("location", "denmark"),
 ]
 
@@ -46,13 +54,18 @@ FACTS = [
 BOOT = [
     ("mounting /dev/curiosity", False),
     ("loading business-economics + it", False),
-    ("starting marketing-ops.service", False),
-    ("starting bootstrapper.target", False),
+    ("resolving problem → solution", False),
+    ("starting build-use-improve.loop", False),
     ("bringing up proxmox-ve", False),
-    ("starting n8n automation runner", False),
+    ("attaching vm + lxc guests", False),
     ("mounting zfs pool + backups", False),
-    ("reached target ship-something-today", True),
+    ("reached target make-something-useful", True),
 ]
+
+# The loop the whole page is about: a problem goes in, value comes out, and
+# the middle repeats until it is worth having.
+LOOP_IN, LOOP_OUT = "a problem", "something useful"
+LOOP = ["build", "use", "observe", "improve"]
 
 # The topology. EDIT ME: these are plausible homelab defaults, not a scan of
 # your rack — swap them for what you actually run. The node's guest count is
@@ -102,13 +115,6 @@ NAV = [
     ("storage", "storage & backups"),
     ("access", "network & access"),
     ("why", "why self-host"),
-]
-
-# The two reader tracks. (anchor, title, subtitle, accent class)
-TRACKS = [
-    ("projects", "how i run work", "kanban · version control · shipping",
-     "acc"),
-    ("building", "how i build it", "proxmox · go · terraform · mcp", "warn"),
 ]
 
 # EDIT ME: the board is illustrative — put real work items here.
@@ -241,7 +247,7 @@ def draw_boot():
     STATUS = "[  OK  ]"
     lead_in, step = 0.45, 0.17
 
-    lines = [("", f"{USER} — cold boot", None)]
+    lines = [("", f"{NAME} — cold boot", None)]
     t = 0.118
     for label, final in BOOT:
         lines.append((f"[ {t:.3f} ] ", label, "final" if final else "ok"))
@@ -633,38 +639,109 @@ def draw_stack():
     return "".join(out)
 
 
-# ------------------------------------------------- switch-*.svg / the tracks
+# ------------------------------------------------------------------ loop.svg
 
-def draw_switch(title, subtitle, accent):
-    """One of the two doors into the page.
+def draw_loop():
+    """A problem goes in, the middle repeats, something useful comes out.
 
-    A reader here for how I run work and a reader here for what I build want
-    different pages, and there is no way to swap content in place — GitHub
-    allows no CSS or JS in a README. So the honest version of a "switch" is
-    two doors that clearly lead somewhere, which is what this is.
+    The four stages are one shape each rather than a diagram of arrows,
+    because the point is the repetition — so a single highlight walks the
+    stages and returns, instead of every stage animating at once.
     """
-    W, H = 296.0, 92.0
-    out = [svg_open(W, H)]
-    out.append(f'<rect x="0.75" y="0.75" width="{W - 1.5:.1f}" '
-               f'height="{H - 1.5:.1f}" rx="10" class="pane ls" '
-               f'stroke-width="1.2"/>')
-    # a spine in the track's colour, so the two read as a pair of choices
-    out.append(f'<rect x="0.75" y="14" width="3.5" height="{H - 28:.1f}" '
-               f'rx="1.75" class="{accent}"/>')
-    out.append(text(22, 38, esc(title), 15, "ink", weight="600"))
-    out.append(text(22, 58, esc(subtitle), 10.5, "fnt"))
+    H = 128.0
+    chip_h, gap, top = 42.0, 14.0, 22.0
+    mid = top + chip_h / 2
+    ret_y = top + chip_h + 34
 
-    ax, ay = W - 30, H - 26
-    out.append(text(22, ay + 4, "open", 10, accent, weight="600",
-                    spacing="0.6"))
-    out.append(f'<path d="M{ax - 12:.1f} {ay:.1f}H{ax:.1f}'
-               f'M{ax - 4:.1f} {ay - 4:.1f}L{ax:.1f} {ay:.1f}'
-               f'L{ax - 4:.1f} {ay + 4:.1f}" class="as" fill="none" '
-               f'stroke-width="1.5" stroke-linecap="round" '
-               f'stroke-linejoin="round">'
-               f'<animateTransform attributeName="transform" '
-               f'type="translate" values="0 0;3 0;0 0" keyTimes="0;0.5;1" '
-               f'dur="2.6s" begin="0.9s" repeatCount="indefinite"/></path>')
+    # The end labels claim their space first and the stages divide what is
+    # left. Fixing the chip width instead pushed the last one under the exit
+    # label and left its arrow pointing backwards.
+    fs_end, arrow_w, pad = 10.0, 26.0, 2.0
+    in_w = len(LOOP_IN) * fs_end * CW
+    out_w = len(LOOP_OUT) * fs_end * CW
+    x0 = pad + in_w + arrow_w
+    right = WIDTH - pad - out_w - arrow_w
+    chip_w = (right - x0 - gap * (len(LOOP) - 1)) / len(LOOP)
+    xs = [x0 + i * (chip_w + gap) for i in range(len(LOOP))]
+    last = xs[-1] + chip_w
+
+    out = [svg_open(WIDTH, H)]
+
+    def arrow(x1, x2, y, begin):
+        return appear(
+            f'<path d="M{x1:.1f} {y:.1f}H{x2:.1f}M{x2 - 5:.1f} {y - 3.6:.1f}'
+            f'L{x2:.1f} {y:.1f}L{x2 - 5:.1f} {y + 3.6:.1f}" class="ls" '
+            f'fill="none" stroke-width="1.4" stroke-linecap="round" '
+            f'stroke-linejoin="round"/>', begin, 0.3)
+
+    out.append(appear(text(pad, mid + 4, esc(LOOP_IN), fs_end, "fnt"), 0.05))
+    out.append(arrow(pad + in_w + 6, x0 - 6, mid, 0.2))
+
+    for i, stage in enumerate(LOOP):
+        x = xs[i]
+        out.append(slide_in(
+            f'<rect x="{x:.1f}" y="{top:.1f}" width="{chip_w:.1f}" '
+            f'height="{chip_h:.1f}" rx="9" class="chip ls" '
+            f'stroke-width="1"/>'
+            + text(x + chip_w / 2, mid + 5, esc(stage), 13, "ink",
+                   anchor="middle"),
+            0.3 + i * 0.11, dx=0, dur=0.32))
+        if i:
+            out.append(arrow(xs[i - 1] + chip_w + 3, x - 3, mid,
+                             0.42 + i * 0.11))
+
+    out.append(arrow(last + 6, right + arrow_w - 6, mid, 0.9))
+    out.append(appear(text(right + arrow_w, mid + 4, esc(LOOP_OUT), fs_end,
+                           "acc", weight="600"), 1.0))
+
+    # the return leg, so the middle visibly repeats rather than just ending
+    ret = (f"M{last - chip_w / 2:.1f} {top + chip_h:.1f}"
+           f"C{last - chip_w / 2:.1f} {ret_y:.1f} "
+           f"{last - chip_w / 2:.1f} {ret_y:.1f} "
+           f"{last - chip_w / 2 - 24:.1f} {ret_y:.1f}"
+           f"H{xs[0] + chip_w / 2 + 24:.1f}"
+           f"C{xs[0] + chip_w / 2:.1f} {ret_y:.1f} "
+           f"{xs[0] + chip_w / 2:.1f} {ret_y:.1f} "
+           f"{xs[0] + chip_w / 2:.1f} {top + chip_h:.1f}")
+    length = (last - xs[0]) + 120
+    out.append(f'<path d="{ret}" class="ls" fill="none" stroke-width="1.4" '
+               f'stroke-dasharray="{length:.0f}" '
+               f'stroke-dashoffset="{length:.0f}">'
+               f'<animate attributeName="stroke-dashoffset" '
+               f'from="{length:.0f}" to="0" begin="1.1s" dur="0.7s" '
+               f'fill="freeze"/></path>')
+    out.append(appear(text((xs[0] + last) / 2, ret_y + 16,
+                           "until it is worth having", 9.5, "fnt",
+                           anchor="middle"), 1.7, 0.35))
+
+    # one highlight walks the stages, then the return leg carries it back
+    cycle = len(LOOP) * 1.5
+    stops, keys = [], []
+    for i in range(len(LOOP)):
+        off = xs[i] - xs[0]
+        stops += [f"{off:.1f} 0", f"{off:.1f} 0"]
+        keys += [f"{i / len(LOOP):.4f}", f"{(i + 0.68) / len(LOOP):.4f}"]
+    stops.append("0 0")
+    keys.append("1.0000")
+    out.append(
+        f'<g opacity="0">{fade(1.9, 0.4)}'
+        f'<g><animateTransform attributeName="transform" type="translate" '
+        f'values="{";".join(stops)}" keyTimes="{";".join(keys)}" '
+        f'dur="{cycle:.1f}s" begin="2.2s" repeatCount="indefinite" '
+        f'calcMode="spline" '
+        f'keySplines="{";".join(["0.4 0 0.2 1"] * (len(stops) - 1))}"/>'
+        f'<rect x="{xs[0]:.1f}" y="{top:.1f}" width="{chip_w:.1f}" '
+        f'height="{chip_h:.1f}" rx="9" fill="none" class="as" '
+        f'stroke-width="2"/></g></g>')
+    out.append(f'<circle r="3" class="acc" opacity="0">'
+               f'<animateMotion path="{ret}" begin="2.2s" '
+               f'dur="{cycle:.1f}s" keyPoints="0;0;1;1" '
+               f'keyTimes="0;0.72;0.97;1" calcMode="linear" '
+               f'repeatCount="indefinite"/>'
+               f'<animate attributeName="opacity" values="0;0;1;1;0" '
+               f'keyTimes="0;0.72;0.78;0.95;0.97" dur="{cycle:.1f}s" '
+               f'begin="2.2s" repeatCount="indefinite"/></circle>')
+
     out.append("</svg>")
     return "".join(out)
 
@@ -866,10 +943,9 @@ def main():
             write("whoami.svg", draw_whoami()),
             write("stack.svg", draw_stack()),
             write("infra.svg", draw_infra()),
+            write("loop.svg", draw_loop()),
             write("kanban.svg", draw_kanban()),
             write("gitgraph.svg", draw_gitgraph())]
-    made += [write(f"switch-{key}.svg", draw_switch(title, sub, accent))
-             for key, title, sub, accent in TRACKS]
     made += [write(f"nav-{key}.svg", draw_nav(label)) for key, label in NAV]
     for line in made:
         print(line)

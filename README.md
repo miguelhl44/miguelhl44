@@ -13,96 +13,117 @@
 
 <img src="./hd-about.svg" width="620" alt="about"/>
 
-> Business Economics & IT student in Denmark. Bootstrapper — marketing and IT.
+### Hey, I'm Mikkel.
 
-Bootstrapping means no budget to hide behind, so I learn the whole stack
-rather than the part that fits a job title: the campaign and the funnel it
-runs on, the automation and the hypervisor it runs on. The economics half of
-the degree is why I care what a thing costs to keep running, not just whether
-it works on the day it ships.
+Business Economics & IT student in Denmark. Builder, developer and
+bootstrapper.
 
-Mostly that looks like small automations that remove a manual step, sites that
-load fast, and a homelab I run properly instead of leaving it to rot.
+I like building things that solve problems I actually have.
+
+Usually it starts small: something is repetitive, something is difficult to
+keep track of, a tool doesn't quite do what I need, or a process could clearly
+work better. I'll build something to fix it, use it, find where it falls short,
+and keep iterating until it becomes genuinely useful.
+
+That way of working has taken me surprisingly far down the stack.
+
+A small automation can turn into an application. An application needs somewhere
+to run. Running it raises questions about infrastructure, networking, storage,
+security and monitoring. Eventually you end up learning the layers underneath
+the thing you originally wanted to build.
+
+That's probably the common thread through most of what I do:
+
+<samp>find a problem → build a solution → use it → learn from it → iterate → make it valuable</samp>
+
+I'm interested in the whole system rather than a particular layer of it. I
+enjoy writing software, working with data, automating processes, designing
+infrastructure and figuring out how the pieces fit together.
+
+My Business Economics & IT background adds another perspective: technology is
+ultimately there to create value. I care about whether something works, but
+also whether it is maintainable, scalable, worth the effort and actually
+improves the problem it was built to solve.
+
+I became interested in bootstrapping because this approach naturally lends
+itself to it. When you're building things yourself, there is nobody else to
+fill the gaps. You learn to move between development, infrastructure, data,
+operations and the business problem whenever the project requires it.
+
+I'm still a student, but I don't really think of my projects as exercises.
+They're systems I use, problems I'm trying to solve, and experiments that
+occasionally turn into something much bigger than I expected.
+
+<img src="./hd-loop.svg" width="620" alt="build it. use it. improve it."/>
 
 <div align="center">
 
-<br>
-
-**Two ways through this page — pick whichever you came for.**
-
-<a href="#projects"><img src="./switch-projects.svg" alt="how i run work — kanban, version control, shipping"/></a>
-<a href="#building"><img src="./switch-building.svg" alt="how i build it — proxmox, go, terraform, mcp"/></a>
+<img src="./loop.svg" width="620" alt="a problem goes in, the middle repeats, something useful comes out"/>
 
 </div>
 
-<a id="projects"></a>
+I learn best when there is a real problem attached to what I'm building.
 
-<img src="./hd-how-i-run-work.svg" width="620" alt="how i run work"/>
+Rather than starting with a technology and looking for somewhere to use it, I
+usually start with a problem. The first version can be simple. What matters is
+getting something into use quickly enough that the real problems become
+visible.
+
+The first version is rarely the interesting one. The interesting part is what
+happens afterwards — discovering that a workflow is slower than expected, that
+a dataset needs a different structure, that an interface creates unnecessary
+work, or that something which worked for ten records falls apart at ten
+thousand.
+
+Those are the moments where a project becomes a learning opportunity.
+
+I tend to keep iterating when there is still a meaningful advantage to gain:
+less manual work, better reliability, lower operating cost, better data, a
+faster workflow, or simply a system that I understand better than the
+alternative.
+
+That is also why many of my projects end up crossing boundaries between
+disciplines. A problem that looks like a software problem can turn out to be a
+data problem. A data problem can become an infrastructure problem. An
+infrastructure problem can be solved with automation.
+
+I enjoy following that chain rather than stopping at the boundary of a job
+title.
+
+<img src="./hd-how-i-work.svg" width="620" alt="how i work"/>
+
+**Start with the outcome.** Before building something, I try to define what
+"better" actually means. A feature is only useful if it changes the outcome.
+
+**Keep the feedback loop short.** I prefer getting a small version into use and
+learning from it over spending too long designing something I haven't tested.
+
+**Make work visible.** Whether it is a project board, a Git branch or a TODO
+list, I like being able to see what is happening and what is actually finished.
+
+**Leave things better than I found them.** Good enough for today is sometimes
+the right decision. But when I touch something repeatedly, I usually look for
+ways to make it simpler, more reliable or easier to reproduce.
+
+**Understand the layers underneath.** I don't need to reinvent everything, but
+I like knowing what is happening underneath the abstraction I'm relying on.
+That curiosity is what took me from writing applications into infrastructure,
+systems and automation.
 
 <div align="center">
 
-<img src="./kanban.svg" width="620" alt="kanban board"/>
-
-</div>
-
-Bootstrapping without a team means the process has to survive me forgetting
-things. A board is the cheapest way to do that: work is visible, and the column
-a card sits in is the honest answer to "what state is this actually in", which
-is not the same as how busy I feel.
-
-The column I care about is **doing**, and the rule is that it stays small.
-Three things half-finished is worse than one thing shipped, because unfinished
-work has a holding cost — you pay to remember it every time you look at the
-board. Limiting what is in flight is not discipline for its own sake, it is
-what makes the rest of the columns tell the truth.
-
-<div align="center">
+<img src="./kanban.svg" width="620" alt="a board with one card crossing it"/>
 
 <img src="./gitgraph.svg" width="620" alt="branch, review, merge"/>
 
 </div>
 
-Same idea in version control. Work happens on a branch, `main` stays something
-I could deploy right now, and a change gets read before it lands — even when
-the person reading it is me a day later. Reviewing my own branch has caught
-more than it has any right to; writing down what a change does forces me to
-notice when I cannot explain it.
+<!-- EDIT ME: the board is illustrative — the BOARD list in
+     scripts/make_profile.py holds the card names. -->
 
-<details>
-<summary><b>&nbsp;How I keep a project honest when nobody is checking</b></summary>
+<img src="./hd-homelab.svg" width="620" alt="the homelab"/>
 
-<br>
-
-**Write the finish line first.** Before starting I write what "done" means in
-one sentence. If I cannot, the task is really two tasks wearing a coat, and
-splitting it there saves the argument with myself later.
-
-**Small commits, real messages.** A commit that says `fix stuff` is a note to
-nobody. The one that says why the change was needed is the note I will actually
-want in six months, when the code makes sense but the reason does not.
-
-**Timebox the research.** It is easy to spend an evening reading about the
-correct approach and ship nothing. I give unknowns a fixed slot; when it runs
-out I take the best option I have and write down what I would revisit.
-
-**Stop counting hours, count shipped things.** The economics half of my degree
-made this concrete: effort is a cost, not an output. What matters is whether
-the manual step is actually gone.
-
-<!-- EDIT ME: swap in your real tools — Jira/Linear/GitHub Projects, whatever
-     you use — and the way your board is really laid out. -->
-
-</details>
-
-<div align="center">
-
-<a href="#building"><img src="./switch-building.svg" alt="switch to how i build it"/></a>
-
-</div>
-
-<a id="building"></a>
-
-<img src="./hd-how-i-build-it.svg" width="620" alt="how i build it"/>
+### The homelab is where software stops being just code.
 
 <div align="center">
 
@@ -115,21 +136,29 @@ the manual step is actually gone.
 
 </div>
 
-Everything self-hosted runs on **Proxmox VE** — one hypervisor, guests split by
-job rather than piled into one box, so a broken container is a broken container
-and not a broken evening. Storage is **ZFS**, which is the actual reason the
-setup is worth running: snapshots make a bad change cheap to undo, and
-scrubbing means bit rot gets caught rather than quietly restored from a backup
-that already has it.
+I run my own infrastructure with **Proxmox VE**, using virtual machines and LXC
+containers for development, services and experiments. It gives me a place to
+build, deploy, break, restore and operate systems rather than only developing
+them locally.
 
-The rule I hold it to is that a rebuild has to be boring. Configuration lives
-in files, backups run without being asked, and nothing important exists in only
-one place. Running it is how I learn infrastructure — you find out what you
-actually understand the first time you have to restore something.
+The useful part isn't the hardware. It's having to deal with the consequences
+of decisions.
 
-<!-- EDIT ME: the tiles in infra.svg are set in scripts/make_profile.py
-     (the SERVICES list). Swap them for what you really run, then re-run
-     `python3 scripts/make_profile.py`. -->
+A service that crashes at 2 AM is different from one that merely failed a local
+test. A full disk becomes a capacity problem. A broken configuration becomes a
+recovery problem. A network change becomes an availability problem. Those
+experiences have made infrastructure much easier to understand, because there
+is always a real system behind the concept.
+
+I use **ZFS** for storage, snapshots for cheap rollbacks and backups for actual
+recovery. Development work is isolated in VMs where I can experiment freely,
+while persistent services live in lightweight containers.
+
+The general principle is simple: make systems reproducible, isolate failures,
+automate what is repetitive, and make mistakes cheap to recover from.
+
+<!-- EDIT ME: the tiles in infra.svg are the SERVICES list in
+     scripts/make_profile.py. Swap them for what you really run. -->
 
 <a id="guests"></a>
 
@@ -213,20 +242,19 @@ per service.
 
 <br>
 
-Bootstrapping is the short answer. A subscription that charges per seat or per
-run gets more expensive exactly when something starts working, which is the
-worst possible time to be punished for it. Hardware I already own costs the same
-whether an automation runs ten times a month or ten thousand.
+Partly cost. A subscription that charges per seat or per run gets more expensive
+exactly when something starts working, which is the worst possible time to be
+punished for it. Hardware I already own costs the same whether an automation
+runs ten times a month or ten thousand.
 
-The longer answer is that operating something teaches what reading about it
-does not. Restoring a backup, chasing why a container will not start, watching a
-disk fill — those are the moments where you find out which parts you actually
-understood. That is difficult to get from a tutorial and it is most of why the
-lab exists.
+Mostly, though, operating something teaches what reading about it does not.
+Restoring a backup, chasing why a container will not start, watching a disk
+fill — those are the moments where you find out which parts you actually
+understood.
 
-The trade is real, though: I am also the person who gets paged. Self-hosting is
-worth it for the things I want to understand and the things that would otherwise
-meter me. Not for everything.
+The trade is real: I am also the person who gets paged. Self-hosting is worth it
+for the things I want to understand and the things that would otherwise meter
+me. Not for everything.
 
 </details>
 
@@ -236,15 +264,10 @@ meter me. Not for everything.
 
 </div>
 
-One machine underneath all of it. Dev work sits in a **VM** — its own kernel, so
-I can break it without taking anything else down — and the services run as **LXC
-containers**, which share the host kernel and cost almost nothing to leave
-running. Splitting them that way is the whole point: the thing I experiment on
-and the things that need to stay up are not the same thing.
-
-I work on it from **VS Code over SSH**, which makes the laptop mostly a keyboard.
-Nothing important lives locally, so a reinstall costs an afternoon rather than a
-weekend.
+One machine underneath all of it. Dev work sits in a VM I can break; the
+services run as containers that need to stay up. I reach both from VS Code over
+SSH, which makes the laptop mostly a keyboard — nothing important lives locally,
+so a reinstall costs an afternoon rather than a weekend.
 
 <!-- EDIT ME: the tools and which lane each runs in are the TOOLS list in
      scripts/make_profile.py — tag a tool "vm" or "ct" and the funnel follows. -->
@@ -257,40 +280,32 @@ weekend.
 **Go, for the things that have to just run.** A single static binary with no
 runtime to install is the right shape for a box I want to stay boring: drop it
 in a container, point systemd at it, and it does not break because something
-upgraded a dependency underneath it. It is also small enough in memory that
-running several alongside everything else is not a decision I have to think
-about.
+upgraded a dependency underneath it.
 
 **Terraform, so the lab is describable.** The point is not that clicking through
 the Proxmox UI is slow — it is that clicking leaves no record. A guest defined
 in code can be read, diffed and recreated; a guest defined by remembering what I
-clicked eight months ago cannot. This is the same instinct as the ZFS snapshots:
-make being wrong cheap to undo.
+clicked eight months ago cannot. Same instinct as the snapshots: make being
+wrong cheap to undo.
 
 **MCP servers, to give a model real access instead of a description.** Writing
-my own means deciding exactly what it can see and do, which is the whole
-security question in one place rather than scattered. A narrow tool that returns
-real data beats a broad one that guesses.
+my own means deciding exactly what it can see and do, which puts the whole
+security question in one place rather than scattering it. A narrow tool that
+returns real data beats a broad one that guesses.
 
 The thread through all three: I would rather write a small thing I fully
 understand than adopt a large thing I do not. Not because it is always the right
-trade — it is not, and I have wasted time on it — but because understanding the
-layer under you is most of what a homelab is for.
+trade — it is not, and I have spent time finding that out — but because
+understanding the layer under you is most of what this is for.
 
 <!-- EDIT ME: name the actual Go tools and MCP servers you have built, and what
-     your Terraform actually manages. Specifics beat principles here. -->
+     your Terraform manages. Specifics beat principles here. -->
 
 </details>
 
-<div align="center">
-
-<a href="#projects"><img src="./switch-projects.svg" alt="switch to how i run work"/></a>
-
-</div>
-
 <img src="./hd-repos.svg" width="620" alt="repos"/>
 
-<!-- EDIT ME: one block per project, a line or two each -->
+<!-- EDIT ME: one block per project, a line or two on the problem it solved -->
 **[mathias-n8n](https://github.com/miguelhl44/mathias-n8n)** &nbsp;·&nbsp; <samp>n8n</samp><br>
 Automation workflows — the glue that removes the manual step between two tools.
 
@@ -311,6 +326,25 @@ This page. Every graphic on it is drawn by a script in this repo.
 
 </div>
 
+<img src="./hd-interests.svg" width="620" alt="what i'm interested in"/>
+
+I'm currently most interested in the space where software, data and
+infrastructure meet:
+
+- Building reliable software and internal tools
+- Data pipelines, processing and automation
+- Linux, virtualization and infrastructure
+- Cloud and self-hosted systems
+- APIs and system integrations
+- AI tooling, agents and MCP
+- Developer tooling and reproducible environments
+- Turning manual workflows into systems
+
+I'm less interested in collecting technologies than in understanding how they
+combine to solve a real problem. If a project teaches me something useful and
+ends up making something faster, simpler, cheaper or more reliable, it was
+probably worth building.
+
 <img src="./hd-how-this-works.svg" width="620" alt="how this works"/>
 
 Every graphic here is generated, not embedded from someone else's server.
@@ -329,9 +363,9 @@ Three scripts, split by what feeds them:
   schedule. A [daily action](.github/workflows/stats.yml) runs it against the
   GitHub GraphQL API and commits just the files whose contents changed.
 - [`make_profile.py`](scripts/make_profile.py) draws the boot console, the
-  terminal card, the stack funnel and the topology from a config block at the
-  top of the file — edit what it says about me, re-run it. Tagging a tool `vm`
-  or `ct` is enough to move it to the other lane; the funnel is computed from
+  terminal card, the loop, the board, the git graph, the stack funnel and the
+  topology from a config block at the top of the file. Tagging a tool `vm` or
+  `ct` is enough to move it to the other lane; the funnel is computed from
   that, not drawn by hand.
 - [`make_portrait.py`](scripts/make_portrait.py) pushes a photo through a
   character ramp it picks by rendering each candidate glyph and measuring the
