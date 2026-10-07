@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Turn a photo into the animated ASCII portrait at the top of the README.
 
-Run by hand, not by the daily workflow — the photo only changes when you
-change it:
+Run it by hand rather than on a schedule, since the photo only changes when
+you change it:
 
     python3 scripts/make_portrait.py            # rebuild portrait.svg
     python3 scripts/make_portrait.py --preview  # print it to the terminal
@@ -24,7 +24,7 @@ Two things make the result readable rather than mush:
 The typeface is subset to just the ramp glyphs and inlined as base64. That
 isn't decoration: an SVG loaded through <img> may not fetch subresources, so
 a linked font would never arrive, and the grid assumes an advance width of
-exactly 0.6 em — a viewer whose default monospace is narrower would see the
+exactly 0.6 em, and a viewer whose default monospace is narrower would see the
 portrait squeezed. The subset costs about 2 KB.
 """
 import argparse
@@ -39,7 +39,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 TTF = os.path.join(HERE, "fonts", "JetBrainsMono-Regular.ttf")
 SOURCE = os.path.join(HERE, "portrait-source.jpg")
-OUT = os.path.join(ROOT, "portrait.svg")
+OUT = os.path.join(ROOT, "assets", "portrait.svg")
 
 # Glyphs allowed in the ramp: no XML metacharacters, nothing that reads as
 # punctuation noise at 8px, and no space-lookalikes beyond the space itself.
@@ -55,7 +55,7 @@ VIGNETTE = (0.82, 1.30) # normalised radii: fully opaque -> fully faded
 LEVELS = 11             # ramp steps
 
 FS = 8.0                # font size, px
-LH = 8.0                # line height, px — tight, so cells stay square-ish
+LH = 8.0                # line height, px; tight, so cells stay square-ish
 ADV = 0.6               # JetBrains Mono advance width, em
 PAD = 6.0
 ROW_DUR = 0.09          # one row's wipe

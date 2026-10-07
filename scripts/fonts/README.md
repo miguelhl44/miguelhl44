@@ -7,7 +7,7 @@ v2.304, redistributed unmodified under the SIL Open Font License 1.1
 It is not loaded by the README. `scripts/make_portrait.py` uses it twice at
 build time: once to measure the ink coverage of each candidate glyph, so the
 character ramp is ordered by real coverage rather than a guess, and once to cut
-a subset containing only the ramp's glyphs. That subset — about 2 KB — is what
+a subset containing only the ramp's glyphs. That subset, about 2 KB, is what
 gets inlined into `portrait.svg` as base64.
 
 Inlining is required rather than preferred: the SVG is loaded through an
